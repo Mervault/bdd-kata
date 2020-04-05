@@ -3,12 +3,14 @@ package com.kata.bank;
 import java.util.Date;
 
 public class BankAccount {
-    public void depositMoney(Date date, Double amount){ statements.addDeposit(date, amount);};
-    public void withdrawMoney(Date date, Double amount){statements.addWithdraw(date, amount);};
-    //TODO remplacer Integer get... par un void print... si on peut capturer le print dans la classe de test
-    public Double getBalance(){
-        return statements.getLastBalance();
-    }
+    private Double balance = 0.0;
+
+    public void depositMoney(Date date, Double amount){
+        balance += amount; 
+        statements.addDeposit(date, amount, balance);};
+    public void withdrawMoney(Date date, Double amount){
+        balance -= amount; 
+        statements.addWithdraw(date, amount, balance);};
 
     public void print() {
         statements.print();

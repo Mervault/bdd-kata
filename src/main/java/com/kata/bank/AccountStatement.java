@@ -16,9 +16,5 @@ public abstract class AccountStatement {
         this.balance = balance;
     }
 
-    public Double getBalance() {
-        return balance;
-    }
-
     abstract public void print() ;
 }

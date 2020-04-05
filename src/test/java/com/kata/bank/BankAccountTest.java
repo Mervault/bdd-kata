@@ -5,9 +5,6 @@ import org.junit.Before;
 import org.junit.After;
 import static org.junit.Assert.*;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
@@ -15,20 +12,19 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
-//TODO enlever les get balance inutiles
-//TODO ajouter un test BDD (jbehave ou Cucumber)
+// End of line is in Linux format for Windows/Linux compatibility
 public class BankAccountTest {
-    private static final Logger LOGGER = LogManager.getLogger(BankAccountTest.class.getName());
     private final BankAccount account = new BankAccount();
     private final Double initialBalance = 1000.0;
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final PrintStream originalOutput = System.out;
     private final static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    private final String statementHeader = "date || credit || debit || balance\r\n";
-    private final String initialStatement = "14/01/2012 || 1000,00 || || 1000,00\r\n";
+    private final static String lineSeparator = System.lineSeparator();
+    private final String statementHeader = "date || credit || debit || balance" + lineSeparator;
+    private final String initialStatement = "14/01/2012 || 1000,00 || || 1000,00" + lineSeparator;
     @Before
     public void setUp() throws ParseException {
-        System.setOut(new PrintStream(outputStream));
+        System.setOut(new PrintStream(outputStream));        
         String stringDate = "14/01/2012";
         Date date = simpleDateFormat.parse(stringDate);
         account.depositMoney(date, initialBalance);
@@ -41,8 +37,8 @@ public class BankAccountTest {
 
     @Test
     public void printStatements() throws ParseException {
-        String expected = "date || credit || debit || balance\r\n"
-                            + "14/01/2012 || 1000,00 || || 1000,00\r\n";
+        String expected = "date || credit || debit || balance" + lineSeparator
+                            + "14/01/2012 || 1000,00 || || 1000,00" + lineSeparator;
         account.print();
         assertEquals(expected, outputStream.toString());
     }
@@ -55,10 +51,10 @@ public class BankAccountTest {
         account.depositMoney(date, amount);
         account.print();
         Double expectedBalance = initialBalance + amount;
-        String expectedStatement = stringDate + " || " + String.format("%.2f", amount) + " || || " + String.format("%.2f", expectedBalance) + "\r\n";
+        String expectedStatement = stringDate + " || " + String.format("%.2f", amount) + " || || " + String.format("%.2f", expectedBalance) + lineSeparator;
         String expectedStatementsList = statementHeader
-                                    + initialStatement
-                                    + expectedStatement;
+                                    + expectedStatement 
+                                    + initialStatement;
         assertEquals(expectedStatementsList, outputStream.toString());
     }
 
@@ -70,10 +66,10 @@ public class BankAccountTest {
         account.withdrawMoney(date, amount);
         account.print();
         Double expectedBalance = initialBalance - amount;
-        String expectedStatement = stringDate + " || || " + String.format("%.2f", amount) + " || " + String.format("%.2f", expectedBalance) + "\r\n";
+        String expectedStatement = stringDate + " || || " + String.format("%.2f", amount) + " || " + String.format("%.2f", expectedBalance) + lineSeparator;
         String expectedStatementsList = statementHeader
-                                    + initialStatement
-                                    + expectedStatement;
+                                    + expectedStatement
+                                    + initialStatement;
         assertEquals(expectedStatementsList, outputStream.toString());
     }
 }
