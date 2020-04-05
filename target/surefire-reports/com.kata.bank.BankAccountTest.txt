@@ -1,14 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.kata.bank.BankAccountTest
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.326 sec <<< FAILURE! - in com.kata.bank.BankAccountTest
-printStatements(com.kata.bank.BankAccountTest)  Time elapsed: 0.005 sec  <<< FAILURE!
-org.junit.ComparisonFailure: expected:<... || debit || balance[
-14/01/2012 || 1000.00 || || 1000.00]
-> but was:<... || debit || balance[
-14/01/2012 || 1000,00 || || 1000,00]
->
-	at org.junit.Assert.assertEquals(Assert.java:115)
-	at org.junit.Assert.assertEquals(Assert.java:144)
-	at com.kata.bank.BankAccountTest.printStatements(BankAccountTest.java:60)
-

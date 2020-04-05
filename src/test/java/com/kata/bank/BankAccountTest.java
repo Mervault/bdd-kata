@@ -15,6 +15,8 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
+//TODO enlever les get balance inutiles
+//TODO ajouter un test BDD (jbehave ou Cucumber)
 public class BankAccountTest {
     private static final Logger LOGGER = LogManager.getLogger(BankAccountTest.class.getName());
     private final BankAccount account = new BankAccount();
@@ -22,7 +24,8 @@ public class BankAccountTest {
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final PrintStream originalOutput = System.out;
     private final static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
+    private final String statementHeader = "date || credit || debit || balance\r\n";
+    private final String initialStatement = "14/01/2012 || 1000,00 || || 1000,00\r\n";
     @Before
     public void setUp() throws ParseException {
         System.setOut(new PrintStream(outputStream));
@@ -37,26 +40,40 @@ public class BankAccountTest {
     }
 
     @Test
-    public void depositMoneyOnAccount() throws ParseException {
-        String stringDate = "14/01/2012";
-        Date date = simpleDateFormat.parse(stringDate);
-        account.depositMoney(date, 1000.0);
-        Double expected = initialBalance + 1000;
-        assertEquals(expected, account.getBalance());
-    }
-
-    @Test
-    public void withdrawMoneyFromAccount() {
-        account.withdrawMoney(600.0);
-        Double expected = initialBalance - 600;
-        assertEquals(expected, account.getBalance());
-    }
-
-    @Test
     public void printStatements() throws ParseException {
-        String expected = "date || credit || debit || balance\n"
-                            + "14/01/2012 || 1000.00 || || 1000.00\n";
+        String expected = "date || credit || debit || balance\r\n"
+                            + "14/01/2012 || 1000,00 || || 1000,00\r\n";
         account.print();
         assertEquals(expected, outputStream.toString());
+    }
+
+    @Test
+    public void printStatementsAfterMoneyDepositMoney() throws ParseException {
+        String stringDate = "14/01/2012";
+        Date date = simpleDateFormat.parse(stringDate);
+        Double amount = 1000.0;
+        account.depositMoney(date, amount);
+        account.print();
+        Double expectedBalance = initialBalance + amount;
+        String expectedStatement = stringDate + " || " + String.format("%.2f", amount) + " || || " + String.format("%.2f", expectedBalance) + "\r\n";
+        String expectedStatementsList = statementHeader
+                                    + initialStatement
+                                    + expectedStatement;
+        assertEquals(expectedStatementsList, outputStream.toString());
+    }
+
+    @Test
+    public void printStatementsAfterMoneyWithdraw() throws ParseException {
+        String stringDate = "14/01/2012";
+        Date date = simpleDateFormat.parse(stringDate);
+        Double amount = 600.0;
+        account.withdrawMoney(date, amount);
+        account.print();
+        Double expectedBalance = initialBalance - amount;
+        String expectedStatement = stringDate + " || || " + String.format("%.2f", amount) + " || " + String.format("%.2f", expectedBalance) + "\r\n";
+        String expectedStatementsList = statementHeader
+                                    + initialStatement
+                                    + expectedStatement;
+        assertEquals(expectedStatementsList, outputStream.toString());
     }
 }
